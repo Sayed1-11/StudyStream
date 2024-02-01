@@ -110,7 +110,20 @@
 
 
 
-const handleLogout = () => {
+
+
+
+const course_container = document.getElementById('courseContainer');
+const Purchased_Container = document.getElementById('PurchasedContainer');
+const userId = window.localStorage.getItem("user_id");
+
+
+
+const login_button = document.getElementById('login_button');
+if (userId) {
+    login_button.innerText = "Logout";
+   
+    const handleLogout = () => {
     const token = localStorage.getItem('token');
     fetch("https://online-school-igar.onrender.com/logout/",{
         method: "POST",
@@ -125,17 +138,14 @@ const handleLogout = () => {
         console.log(data);
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user_id");
     })
     
 }
 
+}
 
-const course_container = document.getElementById('courseContainer');
-const Purchased_Container = document.getElementById('PurchasedContainer');
-const userId = window.localStorage.getItem("user_id");
-
-
-// Fetch user enrollments
 fetch(`https://online-school-igar.onrender.com/enroll/?student=${userId}`)
     .then(res => res.json())
     .then(enrollments => {
@@ -146,10 +156,8 @@ fetch(`https://online-school-igar.onrender.com/enroll/?student=${userId}`)
         fetch('https://online-school-igar.onrender.com/course/')
             .then(res => res.json())
             .then(data => {
-                // Filter courses based on enrolledCourseIds
                 const purchasedCourses = data.filter(course => enrolledCourseIds.includes(course.id));
 
-                // Render filtered courses
                 purchasedCourses.forEach(course => {
                     const couseItem = document.createElement('div');
                     couseItem.classList.add("col-lg-4", "col-md-6", "wow", "fadeInUp")
