@@ -262,7 +262,10 @@ fetch(`https://online-school-igar.onrender.com/course/${courseId}/`)
         console.error('Error fetching course details:', error);
     });
 
-
+ const isEnrolled = (courseId) => {
+        const enrollmentStatus = localStorage.getItem(`enrolled_course_${courseId}`);
+        return enrollmentStatus === "true";
+    };
 
     const courseFeaturesContainer = document.getElementById('feature');
     
@@ -304,13 +307,23 @@ fetch(`https://online-school-igar.onrender.com/course/${courseId}/`)
                 </div>
                 <!-- Add other properties as needed -->
                 <h5 class="text-white py-3 px-4 m-0">Course Price: ${course.fee}</h5>
-                <div class="py-3 px-4">
-                    <a class="btn btn-block btn-light py-3 px-5" data-course-id=${course.id}" onclick="enrollment(${course.id})">Enroll Now</a>
+                <div class="py-3 px-4" id="enrollBtnDiv">
+                    <a class="btn btn-block btn-light py-3 px-5" data-course-id=${course.id}"  onclick="enrollment(${course.id})">Enroll Now</a>
                 </div>
-                <div class="py-3 px-5">
-                    <a class="btn btn-block btn-light py-3 px-5" data-course-id=${course.id}" href="lessons.html?id=${course.id}">Watch Now</a>
+                <div class="py-3 px-4" id="watchBtnDiv">
+                    <a class="btn btn-block btn-light py-3 px-5"  data-course-id=${course.id}" href="lessons.html?id=${course.id}">Watch Now</a>
                 </div>
             `;
+
+
+        if (isEnrolled(course.id)) {
+            
+            document.getElementById('enrollBtnDiv').style.display = 'none';
+            document.getElementById('watchBtnDiv').style.display = 'block';
+        } else {
+            document.getElementById('enrollBtnDiv').style.display = 'block';
+            document.getElementById('watchBtnDiv').style.display = 'none';
+        }
         })
         .catch(error => {
             console.error('Error fetching course details:', error);
@@ -338,32 +351,7 @@ fetch('https://online-school-igar.onrender.com/course/')
     
     })
 })
-function isEnrolled(studentId, courseId, enrollments) {
-    for (const enrollment of enrollments) {
-        if (enrollment.student === studentId && enrollment.course === courseId) {
-            return true;  // Student is enrolled in the course
-        }
-    }
-    return false;  // Student is not enrolled in the course
-}
 
-fetch('https://online-school-igar.onrender.com/enroll/')
-    .then(response => response.json())
-    .then(enrollmentsData => {
-        const studentIdToCheck = 1;  // Replace with the student ID you want to check
-        const courseIdToCheck = 2;   // Replace with the course ID you want to check
-
-        const enrolled = isEnrolled(studentIdToCheck, courseIdToCheck, enrollmentsData);
-
-        if (enrolled) {
-            console.log('Student is enrolled in the course.');
-        } else {
-            console.log('Student is not enrolled in the course.');
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching enrollment data:', error);
-    });
 
 function enrollment(courseId){
     const studentId = localStorage.getItem('user_id');
@@ -385,3 +373,55 @@ function enrollment(courseId){
     
    
 }
+
+
+const get_value = (id) => {
+    const value = document.getElementById(id).value;
+    return value;
+    }
+
+const Filter_course = document.getElementById('feature');
+
+fetch(`http://127.0.0.1:8000/enroll/?student=${userId}`)
+    .then(res => res.json())
+    .then(enrollments => {
+        const enrolledCourseIds = enrollments.map(enrollment => enrollment.course);
+        fetch('http://127.0.0.1:8000/course/')
+            .then(res => res.json())
+            .then(data => {
+                const Filter_course = data.filter(course => enrolledCourseIds.includes(course.id));
+                Filter_course.forEach(course => {
+                    localStorage.setItem(`enrolled_course_${course.id}`, true);
+                });
+            });
+        })
+        .catch(error => console.error('Error fetching courses:', error));
+
+
+const handleContact = (event)=>{
+    event.preventDefault();
+    
+    const name = get_value("name");
+    const email = get_value("email");
+    const subject = get_value("subject");
+    const message = get_value("message");
+    if((name,email,subject,message)){
+        fetch("https://online-school-igar.onrender.com/contact/",{
+            method: "POST",
+            headers : {"content-type":"application/json"},
+            body :JSON.stringify({name,email,subject,message})
+        })
+        .then(res=>res.json())
+        .then((data)=> {console.log(data);
+            alert("Thank you for reaching us!!")
+            window.location.href ="index.html";
+       
+    });
+    }
+    else {
+        alert("Please fill in all fields before sending the message.");
+    }
+   
+   
+}
+
