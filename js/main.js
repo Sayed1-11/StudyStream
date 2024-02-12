@@ -117,13 +117,7 @@ const course_container = document.getElementById('courseContainer');
 const Purchased_Container = document.getElementById('PurchasedContainer');
 const userId = window.localStorage.getItem("user_id");
 
-
-
-const login_button = document.getElementById('login_button');
-if (userId) {
-    login_button.innerText = "Logout";
-   
-    const handleLogout = () => {
+ const handleLogout = () => {
     const token = localStorage.getItem('token');
     fetch("https://online-school-igar.onrender.com/logout/",{
         method: "POST",
@@ -144,6 +138,10 @@ if (userId) {
     
 }
 
+const login_button = document.getElementById('login_button');
+if (userId) {
+    login_button.innerText = "Logout";
+    login_button.addEventListener('click', handleLogout);
 }
 
 fetch(`https://online-school-igar.onrender.com/enroll/?student=${userId}`)
