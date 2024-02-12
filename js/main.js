@@ -375,7 +375,7 @@ function enrollment(courseId){
 }
 
 
-const get_value = (id) => {
+const getting_value = (id) => {
     const value = document.getElementById(id).value;
     return value;
     }
@@ -401,10 +401,10 @@ fetch(`http://127.0.0.1:8000/enroll/?student=${userId}`)
 const handleContact = (event)=>{
     event.preventDefault();
     
-    const name = get_value("name");
-    const email = get_value("email");
-    const subject = get_value("subject");
-    const message = get_value("message");
+    const name = getting_value("name");
+    const email = getting_value("email");
+    const subject = getting_value("subject");
+    const message = getting_value("message");
     if((name,email,subject,message)){
         fetch("https://online-school-igar.onrender.com/contact/",{
             method: "POST",
