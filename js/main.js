@@ -369,6 +369,8 @@ function enrollment(courseId){
         .then(data=>{
             console.log('Enrollement Succesfully',data);
             alert('Enrollement Succesfully');
+            localStorage.setItem(`enrolled_course_${courseId}`, true);
+
         })
     
    
