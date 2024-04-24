@@ -17,7 +17,7 @@ const handleRegistration = (event)=>{
         })
         .then(res=>res.json())
         .then((data)=> console.log(data))
-           
+        window.location.href = "login.html"; 
         }
         else{
             document.getElementById("error").innerText = "password contains minimum eight characters, at least one letter,one number and one special character";
